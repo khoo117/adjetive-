@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Adjectives Grammar Quiz (20 Questions)</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f3f5f9;margin:0;padding:16px;}
+    .wrap{max-width:980px;margin:auto;background:#fff;border-radius:12px;padding:18px;}
+    h1{font-size:20px;margin:0 0 8px;}
+    .sub{color:#556;margin:0 0 14px;font-size:14px;line-height:1.5;}
+    .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;}
+    button{
+      border:0;border-radius:8px;padding:8px 12px;cursor:pointer;
+      background:#2563eb;color:#fff;font-size:14px;
+    }
+    button.secondary{background:#64748b;}
+    .q{border-top:1px solid #eee;padding:14px 4px;}
+    .q:first-of-type{border-top:none;}
+    .qtitle{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;}
+    .sentence{font-size:16px;line-height:1.5;margin:0 0 10px;}
+    .options{display:flex;flex-wrap:wrap;gap:10px 14px;}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      border:2px solid #cfd6e4;border-radius:999px;padding:6px 10px;background:#fff;
+    }
+    .pill.correct{border-color:#22c55e;background:#ecfff4;}
+    .pill.wrong{border-color:#ef4444;background:#fff1f0;}
+    .hint{margin-top:8px;font-size:13px;color:#6b7280;}
+    .hint.ok{color:#16a34a;font-weight:700;}
+    .hint.bad{color:#b91c1c;font-weight:700;}
+    .explain{margin-top:6px;font-size:13px;color:#374151;display:none;}
+    .score{font-weight:800;margin:10px 0 14px;}
+    .answersBox{
+      display:none;background:#eef1f7;padding:12px;border-radius:10px;margin:10px 0 14px;font-size:14px;
+    }
+    .tiny{font-size:12px;color:#6b7280;}
+    .blank{font-weight:800;text-decoration:underline;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div>
+        <h1>Adjectives 形容词语法练习（20题｜A2–B1）</h1>
+        <p class="sub">
+          题型：单选题。选择后即时提示对/错，并高亮。<br>
+          点击 <b>Check All</b> 显示总分、正确答案与简短讲解。点击 🔊 可听句子发音。
+        </p>
+      </div>
+      <div>
+        <button onclick="checkAll()">Check All</button>
+        <button class="secondary" onclick="resetAll()">Reset</button>
+      </div>
+    </div>
+
+    <div id="quiz"></div>
+
+    <div id="score" class="score"></div>
+    <div id="answersBox" class="answersBox"></div>
+    <p class="tiny">发音使用浏览器内建语音（Web Speech API）。手机上可能需要先点一次按钮才会播放。</p>
+  </div>
+
+<script>
+const questions = [
+  {
+    sentence: "She is a ____ student. She always studies hard.",
+    options: ["lazy","hard-working","angry","noisy"],
+    answer: "hard-working",
+    explain: "形容学生努力学习，用 hard-working 最合适。"
+  },
+  {
+    sentence: "This bag is very ____; I can carry it easily.",
+    options: ["heavy","light","wet","dirty"],
+    answer: "light",
+    explain: "carry easily 表示不重 → light。"
+  },
+  {
+    sentence: "The soup is too ____; please add some water.",
+    options: ["salty","sweet","cold","dry"],
+    answer: "salty",
+    explain: "add water 常用于汤太咸/太浓；这里选 salty。"
+  },
+  {
+    sentence: "It is a ____ day, so take an umbrella.",
+    options: ["sunny","rainy","quiet","safe"],
+    answer: "rainy",
+    explain: "umbrella 对应下雨天 → rainy。"
+  },
+  {
+    sentence: "My room is ____ than yours.",
+    options: ["clean","cleaner","cleanest","more clean"],
+    answer: "cleaner",
+    explain: "than 用比较级：clean → cleaner。"
+  },
+  {
+    sentence: "This is the ____ movie I have ever seen.",
+    options: ["funny","funnier","funniest","more funny"],
+    answer: "funniest",
+    explain: "the + 最高级：funny → funniest。"
+  },
+  {
+    sentence: "He looks ____ today because he didn’t sleep well.",
+    options: ["tired","excited","friendly","brave"],
+    answer: "tired",
+    explain: "didn’t sleep well → tired。"
+  },
+  {
+    sentence: "The instructions are ____; everyone can understand them.",
+    options: ["clear","busy","dangerous","strange"],
+    answer: "clear",
+    explain: "everyone can understand → clear。"
+  },
+  {
+    sentence: "It was a ____ mistake, but we can fix it.",
+    options: ["small","huge","rich","wild"],
+    answer: "small",
+    explain: "but we can fix it 表示问题不大 → small。"
+  },
+  {
+    sentence: "This chair is not comfortable. It is too ____.",
+    options: ["soft","hard","new","early"],
+    answer: "hard",
+    explain: "椅子不舒服常见原因：太硬 → hard。"
+  },
+
+  {
+    sentence: "She is very ____; she always helps others.",
+    options: ["kind","rude","lazy","nervous"],
+    answer: "kind",
+    explain: "always helps others → kind。"
+  },
+  {
+    sentence: "The road is ____ at night, so drive slowly.",
+    options: ["dark","cheap","light","weak"],
+    answer: "dark",
+    explain: "at night + drive slowly → dark。"
+  },
+  {
+    sentence: "This test is ____ for me. I need more practice.",
+    options: ["easy","difficult","happy","fresh"],
+    answer: "difficult",
+    explain: "need more practice → difficult。"
+  },
+  {
+    sentence: "The baby is ____ now, so please be quiet.",
+    options: ["asleep","angry","ready","wrong"],
+    answer: "asleep",
+    explain: "please be quiet → asleep。"
+  },
+  {
+    sentence: "That building is very ____; it has many floors.",
+    options: ["tall","short","thin","slow"],
+    answer: "tall",
+    explain: "many floors → tall。"
+  },
+  {
+    sentence: "I prefer ____ colors like white and grey.",
+    options: ["bright","simple","noisy","late"],
+    answer: "simple",
+    explain: "white and grey 属于简约颜色 → simple。"
+  },
+  {
+    sentence: "The water is too ____ to swim in today.",
+    options: ["cold","soft","sweet","safe"],
+    answer: "cold",
+    explain: "too ___ to swim in → cold 常见搭配。"
+  },
+  {
+    sentence: "This book is ____; I can finish it in one day.",
+    options: ["short","deep","wide","empty"],
+    answer: "short",
+    explain: "finish it in one day → short（篇幅短）。"
+  },
+  {
+    sentence: "Your answer is ____; please try again.",
+    options: ["wrong","right","free","open"],
+    answer: "wrong",
+    explain: "try again 表示答案不对 → wrong。"
+  },
+  {
+    sentence: "The classroom is ____ today because many students are absent.",
+    options: ["quiet","crowded","dirty","famous"],
+    answer: "quiet",
+    explain: "many students are absent → quiet。"
+  }
+];
+
+const quiz = document.getElementById("quiz");
+
+function build(){
+  quiz.innerHTML="";
+  questions.forEach((q, idx)=>{
+    const qDiv=document.createElement("div");
+    qDiv.className="q";
+    const sentenceHtml=q.sentence.replace("____", `<span class="blank">____</span>`);
+
+    qDiv.innerHTML=`
+      <div class="qtitle">
+        <p class="sentence"><b>${idx+1}.</b> ${sentenceHtml}</p>
+        <button class="secondary" onclick="speakSentence(${idx})">🔊 Speak</button>
+      </div>
+      <div class="options" id="opts-${idx}">
+        ${q.options.map((opt, j)=>`
+          <label class="pill" id="pill-${idx}-${j}">
+            <input type="radio" name="q${idx}" value="${opt}"/>
+            ${opt}
+          </label>
+        `).join("")}
+      </div>
+      <div class="hint" id="hint-${idx}">Tip: choose the correct adjective for the blank.</div>
+      <div class="explain" id="exp-${idx}">Explanation: ${q.explain}</div>
+    `;
+    quiz.appendChild(qDiv);
+
+    qDiv.querySelectorAll(`input[name="q${idx}"]`).forEach(r=>{
+      r.addEventListener("change", ()=>instantCheck(idx));
+    });
+  });
+}
+build();
+
+function speakSentence(idx){
+  const q=questions[idx];
+  const text=q.sentence.replace("____", q.answer);
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang="en-US";
+  u.rate=0.9;
+  speechSynthesis.speak(u);
+}
+
+function getSelected(idx){
+  const picked=document.querySelector(`input[name="q${idx}"]:checked`);
+  return picked?picked.value:null;
+}
+function setNeutral(idx){
+  document.querySelectorAll(`#opts-${idx} .pill`).forEach(p=>p.classList.remove("correct","wrong"));
+}
+
+function instantCheck(idx){
+  const picked=getSelected(idx);
+  const q=questions[idx];
+  const hint=document.getElementById(`hint-${idx}`);
+  const exp=document.getElementById(`exp-${idx}`);
+  setNeutral(idx);
+
+  if(!picked){
+    hint.textContent="Tip: choose the correct adjective for the blank.";
+    hint.className="hint";
+    exp.style.display="none";
+    return;
+  }
+  const labels=[...document.querySelectorAll(`#opts-${idx} .pill`)];
+  const chosen=labels.find(l=>l.querySelector("input").value===picked);
+
+  if(picked===q.answer){
+    chosen.classList.add("correct");
+    hint.textContent="✓ Correct";
+    hint.className="hint ok";
+    exp.style.display="none";
+  }else{
+    chosen.classList.add("wrong");
+    hint.textContent=`✗ Not correct. Hint: correct answer starts with "${q.answer[0]}"`;
+    hint.className="hint bad";
+    exp.style.display="none";
+  }
+}
+
+function checkAll(){
+  let score=0;
+  const wrongItems=[];
+
+  questions.forEach((q, idx)=>{
+    const picked=getSelected(idx);
+    const hint=document.getElementById(`hint-${idx}`);
+    const exp=document.getElementById(`exp-${idx}`);
+    setNeutral(idx);
+
+    const labels=[...document.querySelectorAll(`#opts-${idx} .pill`)];
+    const chosen=picked?labels.find(l=>l.querySelector("input").value===picked):null;
+    const correct=labels.find(l=>l.querySelector("input").value===q.answer);
+
+    if(picked===q.answer){
+      score++;
+      if(chosen) chosen.classList.add("correct");
+      hint.textContent="✓ Correct";
+      hint.className="hint ok";
+      exp.style.display="none";
+    }else{
+      if(chosen) chosen.classList.add("wrong");
+      correct.classList.add("correct");
+      hint.textContent=`✗ Correct answer: ${q.answer}`;
+      hint.className="hint bad";
+      exp.style.display="block";
+      wrongItems.push(`${idx+1}. Correct: <b>${q.answer}</b> — ${q.explain}`);
+    }
+  });
+
+  document.getElementById("score").textContent=`Score: ${score} / ${questions.length}`;
+  const box=document.getElementById("answersBox");
+  box.style.display="block";
+  box.innerHTML = wrongItems.length
+    ? `<b>Wrong Items (Correct Answers + Explanation):</b><br><br>${wrongItems.join("<br><br>")}`
+    : `<b>Excellent!</b> All answers are correct 🎉`;
+}
+
+function resetAll(){
+  questions.forEach((q, idx)=>{
+    document.querySelectorAll(`input[name="q${idx}"]`).forEach(r=>r.checked=false);
+    setNeutral(idx);
+    const hint=document.getElementById(`hint-${idx}`);
+    const exp=document.getElementById(`exp-${idx}`);
+    hint.textContent="Tip: choose the correct adjective for the blank.";
+    hint.className="hint";
+    exp.style.display="none";
+  });
+  document.getElementById("score").textContent="";
+  const box=document.getElementById("answersBox");
+  box.style.display="none";
+  box.innerHTML="";
+}
+</script>
+</body>
+</html>
